@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Admin Search</title>
+        <meta name="require-session" />
+        <meta name="permission-id" content="1002" />
+    </head>
+    <body data-section="global_search_results">
+        <ul data-bind-results="results-accounts">
+            <li class="nav-header">Accounts (<span data-bind-text="results-accounts-found-rows">0</span>)</li>
+            <li class="unselected" data-label="blank-row" data-row="true">
+                <a data-bind-attr="href=url" data-bind-text="name">name</a>
+            </li>
+        </ul>
+        <ul data-bind-results="results-administrators">
+            <li class="nav-header">Administrators (<span data-bind-text="results-administrators-found-rows">0</span>)</li>
+            <li class="unselected" data-label="blank-row" data-row="true">
+                <a data-bind-attr="href=url" data-bind-text="name">name</a>
+            </li>
+        </ul>
+        <ul data-bind-results="results-categories">
+            <li class="nav-header">Categories (<span data-bind-text="results-categories-found-rows">0</span>)</li>
+            <li class="unselected" data-label="blank-row" data-row="true">
+                <a data-bind-attr="href=url" data-bind-text="name">name</a>
+            </li>
+        </ul>
+        <ul data-bind-results="results-statuses">
+            <li class="nav-header">Statuses (<span data-bind-text="results-statuses-found-rows">0</span>)</li>
+            <li class="unselected" data-label="blank-row" data-row="true">
+                <a data-bind-attr="href=url" data-bind-text="name">name</a>
+            </li>
+        </ul>
+        <ul data-bind-results="results-tags">
+            <li class="nav-header">Tags (<span data-bind-text="results-tags-found-rows">0</span>)</li>
+            <li class="unselected" data-label="blank-row" data-row="true">
+                <a data-bind-attr="href=url" data-bind-text="name">name</a>
+            </li>
+        </ul>
+    </body>
+</html>

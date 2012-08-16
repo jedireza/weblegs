@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<?xml-stylesheet type="text/xml" href="_theme/root/template.xsl"?>
+<html>
+    <head>
+        <title>Environment</title>
+        <meta name="require-session" />
+        <meta name="permission-id" content="1001" />
+    </head>
+    <body>
+        <div class="row">
+            <div class="span12">
+                <div class="page-header">
+                    <h1>Environment Variables</h1>
+                </div>
+            </div>
+        </div>
+        
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="2">Config Variables</th>
+                </tr>
+            </thead>
+            <tbody data-bind-rows="footprint-data">
+                <tr data-label="blank-row">
+                    <td class="varname">
+                        <strong data-bind-text="property">property</strong>:
+                    </td>
+                    <td data-bind-text="value">value</td>
+                </tr>
+            </tbody>
+            <thead>
+                <tr>
+                    <th colspan="2">Environment Variables</th>
+                </tr>
+            </thead>
+            <tbody data-bind-rows="env-data">
+                <tr data-label="blank-row">
+                    <td class="varname">
+                        <strong data-bind-text="property">property</strong>:
+                    </td>
+                    <td data-bind-text="value">value</td>
+                </tr>
+            </tbody>
+            <thead>
+                <tr>
+                    <th colspan="2">PHP Info</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <iframe src="root/environment/phpinfo.html"></iframe>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

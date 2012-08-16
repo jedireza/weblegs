@@ -1,0 +1,14 @@
+/**
+ * page styles
+ */
+form,
+.control-group {
+    margin-bottom: 0px;
+}
+.inactive {
+}
+.inactive td {
+    text-decoration: line-through;
+    border-top: 1px solid #999 !important;
+    background-color: #ccc !important;
+}

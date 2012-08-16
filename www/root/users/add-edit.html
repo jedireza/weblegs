@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<?xml-stylesheet type="text/xml" href="_theme/root/template.xsl"?>
+<html>
+    <head>
+        <title>User Details</title>
+        <meta name="require-session" />
+        <meta name="permission-id" content="1001" />
+    </head>
+    <body>
+        <div class="row">
+            <div class="span12">
+                <div class="page-header">
+                    <h1><a href="/root/users/index.html">Users</a> / Details</h1>
+                </div>
+            </div>
+        </div>
+           
+        <div><!--xslt-include href="root/users/tabs.html"--></div>
+        
+        <div class="row">
+            <div class="span8 column" data-section="record">
+                <span class="app-alerts">---</span>
+                <form id="form" class="form-horizontal" action="" method="post" data-bind-form="get-record" data-bind-form-context="add-update-delete">
+                    <fieldset>
+                        <div class="control-group">
+                            <label class="control-label" for="is_active">Is Active:</label>
+                            <div class="controls">
+                                <select data-bind-input="is_active" name="is_active">
+                                    <option value="yes">yes</option>
+                                    <option value="no">no</option>
+                                </select>
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="username">Username:</label>
+                            <div class="controls">
+                                <input type="text" data-bind-input="username" maxlength="45" size="20" name="username" />
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="email">Email:</label>
+                            <div class="controls">
+                                <input type="text" data-bind-input="email" maxlength="128" size="40" name="email" />
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="timezone">Timezone:</label>
+                            <div class="controls">
+                                <select name="timezone" data-bind-input="timezone" data-bind-function="Helpers::timezoneDD" ></select>
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="password">Password:</label>
+                            <div class="controls">
+                                <input type="password" data-bind-input="password" maxlength="40" size="15" name="password" />
+                                <span class="help-inline"></span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="password_confirm">Confirm Password:</label>
+                            <div class="controls">
+                                <input type="password" data-bind-input="password_confirm" maxlength="40" size="15" name="password_confirm" />
+                                <span class="help-inline"></span>
+                                <div>leave both password fields empty to keep the existing password.</div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-actions">
+                        <input class="btn btn-primary" type="button" value="Create New" name="action" id="button_new" />
+                        <input class="btn btn-primary" type="button" value="Update" name="action" id="button_update" />
+                        <input class="btn btn-danger" type="button" value="Delete" name="action" id="button_delete" data-confirm="Are you sure?" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

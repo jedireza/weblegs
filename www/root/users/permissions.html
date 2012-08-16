@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<?xml-stylesheet type="text/xml" href="_theme/root/template.xsl"?>
+<html>
+    <head>
+        <title>User Permissions</title>
+        <meta name="require-session" />
+        <meta name="permission-id" content="1001" />
+    </head>
+    <body>
+        <div class="row">
+            <div class="span12">
+                <div class="page-header">
+                    <h1><a href="/root/users/index.html">Users</a> / Details / <span data-bind-text="username">---</span></h1>
+                </div>
+            </div>
+        </div>
+           
+        <div><!--xslt-include href="root/users/tabs.html"--></div>
+        
+        <div class="row">
+            <div class="span8 column" data-section="record">
+                <span class="app-alerts">---</span>
+                <form id="form" class="form-horizontal" action="" method="post">
+                    <fieldset>
+                        <div class="control-group">
+                            <div data-bind-function="Page::getPermissions">permissions</div>
+                        </div>
+                    </fieldset>
+                    <div class="form-actions">
+                        <input class="btn btn-primary" type="button" id="button_update" name="action" value="Update" />
+                        <input class="btn btn-danger" type="button" id="button_delete" data-confirm="Are you sure?" name="action" value="Delete All" />
+                    </div>
+                </form>
+            </div>
+            <div class="span4 column">
+                <div class="highlight">
+                    <p>If a security name is <span class="group_permitted">GREEN</span> then this user is granted access from an active group memebership.</p>
+                    <p>This does not include the "Root" group members, which are granted access 100% of the time.</p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

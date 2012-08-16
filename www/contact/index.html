@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<?xml-stylesheet type="text/xml" href="_theme/default/template.xsl"?>
+<html>
+    <head>
+        <title>Contact Us</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="hero-unit">
+                <h1>Contact Us</h1>
+                <p class="lead">
+                    Tell us what's on your mind. We'd love to hear from you.
+                </p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!--left-->
+            <iframe class="span8" width="620" height="365" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/?ie=UTF8&amp;ll=37.0625,-95.677068&amp;spn=50.157795,67.5&amp;t=m&amp;z=4&amp;output=embed"></iframe>
+            
+            <!--right-->
+            <div class="span4" data-section="form">
+                <span class="app-alerts">---</span>
+                <form id="form" method="post" action="">
+                    <div class="control-group">
+                        <label class="control-label" for="name">Name:</label>
+                        <div class="controls">
+                            <input name="name" size="30" type="text" class="span4" data-bind-input="name"/>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label" for="email">Email:</label>
+                        <div class="controls">
+                            <input name="email" size="30" type="text" class="span4" data-bind-input="email"/>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label" for="phone">Phone:</label>
+                        <div class="controls">
+                            <input name="phone" size="30" type="text" class="span4" data-bind-input="phone"/>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label" for="message">Message:</label>
+                        <div class="controls">
+                            <textarea name="message" cols="50" rows="7" class="span4" data-bind-input="message"></textarea>
+                        </div>
+                    </div>
+                    <div class="btn-float"><input id="button_send" class="btn btn-success" type="button" value="Send Message" name="action" /></div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="well">
+            <address>
+                <strong data-bind-text="config:company-name">Acme, Inc.</strong> -- 1428 E Elm Street Los Angeles, CA 90046 | <strong>Phone:</strong> (123) 456-7890
+            </address>
+        </div>
+    </body>
+</html>
