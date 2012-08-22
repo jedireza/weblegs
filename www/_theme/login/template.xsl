@@ -25,7 +25,7 @@
                 <xsl:apply-templates select="head"/>
             </head>
             <body>
-                <div class="navbar navbar-fixed-top">
+                <div class="navbar navbar-inverse navbar-fixed-top">
                     <div class="navbar-inner">
                         <div class="container">
                             <a class="brand" data-bind-attr="href=config:base-href" data-bind-text="config:project-name">footprint</a>
