@@ -125,14 +125,16 @@ project/
                 <p class="lead">Installation:</p>
                 <ol>
                     <li>Create new mysql database and import the <code>mysql-db-structure.sql</code> file.</li>
-                    <li>Configure project settings via the <code>app/config.php</code> file. Make sure you supply MySQL credentials. Supply SMTP credentials if you want emails to send.</li>
+                    <li>Configure project settings via the <code>app/config.php</code> file. Make sure you supply MySQL credentials.</li>
+                    <li>Supply SMTP credentials if you want emails to send.</li>
                     <li>Tell Apache to serve files from <code>www/</code>.</li>
                 </ol>
                 <p class="lead">Gotchas:</p>
-                <ol>
+                <ul>
                     <li>You'll need PHP's <code>libxsl</code> module installed. We use version 1.1.26 compiled against <code>libxml</code> version 2.7.8.</li>
                     <li>Don't install as directory under another domain, setup your project as it's own domain.</li>
-                </ol>
+                    <li>The default root user's password is <code>root</code>. You should change that after install.</li>
+                </ul>
             </section>
         </div>
         
