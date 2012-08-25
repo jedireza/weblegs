@@ -23,9 +23,7 @@
                         <ul class="nav">
                             <li class="active"><a href="./index.html">Overview</a></li>
                             <li><a href="#tour" rel="tooltip" data-placement="bottom" data-original-title="coming soon">Feature Tour</a></li>
-                            <li><a href="#themes" rel="tooltip" data-placement="bottom" data-original-title="coming soon">Themes</a></li>
-                            <li><a href="#engine" rel="tooltip" data-placement="bottom" data-original-title="coming soon">Engine</a></li>
-                            <li><a href="#core" rel="tooltip" data-placement="bottom" data-original-title="coming soon">Core Libs</a></li>
+                            <li><a href="#libs" rel="tooltip" data-placement="bottom" data-original-title="coming soon">Library Docs</a></li>
                         </ul>
                     </div>
                 </div>
@@ -122,18 +120,181 @@ project/
     ├── mysql-db-structure.sql
     └── README.md
 </pre>
-                <p class="lead">Installation:</p>
+                <h4>Installation:</h4>
                 <ol>
+                    <li>Download and unzip files (or git clone) into a directory of your choice.</li>
                     <li>Create new mysql database and import the <code>mysql-db-structure.sql</code> file.</li>
                     <li>Configure project settings via the <code>app/config.php</code> file. Make sure you supply MySQL credentials.</li>
                     <li>Supply SMTP credentials if you want emails to send.</li>
                     <li>Tell Apache to serve files from <code>www/</code>.</li>
                 </ol>
-                <p class="lead">Gotchas:</p>
+                <h4>Gotchas:</h4>
                 <ul>
                     <li>You'll need PHP's <code>libxsl</code> module installed. We use version 1.1.26 compiled against <code>libxml</code> version 2.7.8.</li>
                     <li>Don't install as directory under another domain, setup your project as it's own domain.</li>
                     <li>The default root user's password is <code>root</code>. You should change that after install.</li>
+                </ul>
+            </section>
+            
+            <section id="execution-mode">
+                <div class="page-header">
+                    <h1>Execution Engine</h1>
+                </div>
+                <p class="lead">Weblegs apps can run in either <code>www</code> or <code>cli</code> mode. Web requests start at Apache and the cli scripts are executed on the command line (i.e.: cron jobs).</p>
+                <p class="lead">Both modes use the same config file and in either mode you have access to the Footprint Engine (<code>lib/footprint/Engine.php</code>). You can access this static object in any PHP scripts using the shorthand symbold <code>F</code>.</p>
+<pre class="prettyprint">
+//set some config data (in either mode)
+F::$config->set("user_id", 840);
+
+//get some config data (in either mode)
+F::$config->get("user_id");
+</pre>
+                <p class="lead">Both modes follow an event-style execution. You create classes with methods that the engine executes at the appropriate time.</p>
+                <p>You create a <code>Task</code> class in <code>cli</code> scripts. Kinda looks like:</p>
+<pre class="prettyprint">
+class Task {
+    /**
+     * handles the on load event
+     */
+    public static function eventOnLoad() {
+        $args = print_r(F::$engineArgs, true);
+        print($args);
+    }
+}
+</pre>
+                <p>You create a <code>Page</code> class in <code>www</code> scripts. Kinda looks like:</p>
+<pre class="prettyprint">
+class Page {
+    /**
+     * sends the submitted message
+     */
+    public static function actionSendMessage() {
+        //validate
+        if(F::$request->input("name") == "") {
+            F::$errors->add("name", "required");
+        }
+        
+        //take action
+        if(F::$errors->count() == 0) {
+            //send email
+            F::$emailClient->addTo(F::$config->get("admin-email"));
+            F::$emailClient->subject = "Contact Form Submission";
+            F::$emailClient->message = "An awesome email message from: ". F::$request->input("name") .".";
+            F::$emailClient->send();
+        }
+    }
+}
+</pre>
+            </section>
+            
+            <section id="cli-mode">
+                <div class="page-header">
+                    <h1>CLI Mode &amp; Events</h1>
+                </div>
+                <p class="lead">You execute <code>cli</code> scripts on the command line through the <code>cli/run</code> bash script. For example:</p>
+<pre class="prettyprint">
+//go to your project cli directory
+# cd /myproject/cli
+
+//run a script
+# ./run import-feed/index.php 
+</pre>
+                <p class="lead">The <code>cli/run</code> bash script is super basic. As you can see all we're doing is routing the task script's path to our <code>cli/.controller.php</code> script as an argument.</p>
+<pre class="prettyprint">
+#!/bin/bash
+php .controller.php $@
+</pre>
+                <p class="lead">In <code>cli/.controller.php</code> we include the config first, then your task script and finally start the engine:</p>
+<pre class="prettyprint">
+&lt;?php
+
+require_once(dirname(__FILE__) ."/../app/config.php");
+require_once(dirname(__FILE__) ."/../cli/". $argv[1]);
+
+/**
+ * start the engine
+ */
+F::init();
+</pre>
+                <p class="lead">From here the engine begins processing. Here is a summary of what happens in <code>cli</code> mode:</p>
+                <ul>
+                    <li>Setup engine object, init stuff and open db</li>
+                    <li>Determine path namespace (kinda like a signature of execution)</li>
+                    <li>Fire <code>Task::eventOnLoad</code> method</li>
+                    <li>Loads namespace HTML file into <code>F::$doc</code> (if used)</li>
+                    <li>Fire <code>Task::eventBeforeFinalize</code> method</li>
+                    <li>Final processing of HTML binding instructions</li>
+                    <li>Fire <code>Task::eventFinal</code> method</li>
+                    <li>Close db and finish execution</li>
+                </ul>
+            </section>
+            
+            <section id="web-mode">
+                <div class="page-header">
+                    <h1>WWW Mode &amp; Events</h1>
+                </div>
+                <p class="lead">Your <code>www</code> scripts get executed during web requests (Apache) so the first layer in the process starts with the <code>www/.htaccess</code> file.</p>
+<pre class="prettyprint">
+&lt;FilesMatch "(.xsl|.sql.xml|.php|.email.html)$"&gt;
+    Order Allow,Deny
+    Deny from all
+&lt;/FilesMatch&gt;
+&lt;Files ".controller.php"&gt;
+    Allow from all
+&lt;/Files&gt;
+
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_URI} !\.(php|zip|csv|css|txt|xml|js|gif|png|swf|ico|jpe?g)$
+RewriteRule (.*)$ /.controller.php [L]
+</pre>
+                <p class="lead">First we deny access to any senstive files we don't want exposed to web clients. Then we route stuff like media and data files normally through Apache. Any other requests get routed through the <code>www/.controller.php</code> file.</p>
+<pre class="prettyprint">
+&lt;?php
+
+require_once(dirname(__FILE__) ."/../app/config.php");
+require_once(dirname(__FILE__) ."/../lib/footprint/Router.php");
+
+/**
+ * first check the cache
+ */
+Router::cacheCheck();
+
+/**
+ * initialize the router
+ */
+Router::init();
+</pre>
+                <p class="lead">So instead of just staring the engine, like a <code>cli</code> script, first we initalize the Footprint Router <code>lib/footprint/Router.php</code>, which in turn starts the engine (after some other stuff). The <code>Router</code> object helps us rewrite URLs and will serve cached files when appropriate. If cache is served, no resources are ever opened and the request is finished.</p>
+                <p class="lead">URL rewrites are handled with PHP. You control rewriting with <code>.route.php</code> files. These work like <code>.htacess</code> files where the closest file wins.</p>
+                <p class="lead">Generally here is what the router does:</p>
+                <ul>
+                    <li>Seperates the querystring from the request path</li>
+                    <li>Finds the closest <code>.route.php</code> file and loads contents</li>
+                    <li>Fires the <code>Route::eventOnLoad</code> method</li>
+                    <li>Starts the engine</li>
+                </ul>
+                <p class="lead">From here the engine begins processing. Here is a summary of what happens in <code>www</code> mode:</p>
+                <ul>
+                    <li>Setup engine object and init stuff</li>
+                    <li>Determine path namespace (kinda like a signature of execution)</li>
+                    <li>Includes source of any <code>helpers.php</code> files peer to the namespace path</li>
+                    <li>Includes PHP source of the namespace if it exists</li>
+                    <li>Fire <code>Page::eventOnLoad</code> method</li>
+                    <li>Loads namespace HTML file into <code>F::$doc</code> and processes meta instructions</li>
+                    <li>Open up the db</li>
+                    <li>Fire <code>Page::eventBeforeActions</code> method</li>
+                    <li>Fire <code>action</code> method</li>
+                    <li>Fire <code>Page::eventBeforeBinding</code> method</li>
+                    <li>Executes DOM instructions and data bindings</li>
+                    <li>Fire <code>Page::eventBeforeFinalize</code> method</li>
+                    <li>Special case JSON/Ajax request handling</li>
+                    <li>Final processing of HTML binding instructions</li>
+                    <li>Fire <code>Page::eventBeforeOutputGeneration</code> method</li>
+                    <li>Generates final output</li>
+                    <li>Fire <code>Page::eventFinal</code> method</li>
+                    <li>Close db, store cached result (when appropriate) and finish execution</li>
                 </ul>
             </section>
         </div>
