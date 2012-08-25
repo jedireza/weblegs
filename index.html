@@ -227,13 +227,14 @@ F::init();
                     <li>Fire <code>Task::eventFinal</code> method</li>
                     <li>Close db and finish execution</li>
                 </ul>
+                <p>There's not much going on in <code>cli</code> mode compared to what <code>www</code> mode has going on, so we'll leave it at that.</p>
             </section>
             
             <section id="web-mode">
                 <div class="page-header">
                     <h1>WWW Mode &amp; Events</h1>
                 </div>
-                <p class="lead">Your <code>www</code> scripts get executed during web requests (Apache) so the first layer in the process starts with the <code>www/.htaccess</code> file.</p>
+                <p class="lead">Your <code>www</code> scripts get executed during web requests (*cough* Apache *cough*) so the first layer in the process starts with the <code>www/.htaccess</code> file.</p>
 <pre class="prettyprint">
 &lt;FilesMatch "(.xsl|.sql.xml|.php|.email.html)$"&gt;
     Order Allow,Deny
@@ -296,6 +297,40 @@ Router::init();
                     <li>Fire <code>Page::eventFinal</code> method</li>
                     <li>Close db, store cached result (when appropriate) and finish execution</li>
                 </ul>
+            </section>
+            
+            <section id="web-mode">
+                <div class="page-header">
+                    <h1>Engine Namespace</h1>
+                </div>
+                <p class="lead">The engine namespace (<code>F::$engineNamespace</code>) property is like a path signature. For example, the engine namespace of <code>http://myproject/login/index.html</code> is <code>login/index</code>. It's the path without a file extension. This allows us to do some helpful things like auto include PHP/HTML/JS/CSS respectfully.</p>
+                <p class="lead">Take our home page for example (<code>www/index.html</code>). If we simply added the files <code>www/index.css</code> and/or <code>www/index.js</code> the engine will add the appropriate CSS or JS include tags into the document DOM before sending it to the client.</p>
+<pre class="prettyprint">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;Home Page&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        ...
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+                <p>Would automatically become:</p>
+<pre class="prettyprint">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;Home Page&lt;/title&gt;
+        &lt;link href="index.css" rel="stylesheet" type="text/css"&gt;
+        &lt;script language="javascript" src="index.js" type="text/javascript"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        ...
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+                <p>You could obviously name your files something unique like <code>www/cool.css</code> and include the markup yourself manually. But it's nice to keep the set of files as a named unit. The other advantage to the engine auto-includes is that you can also tell the engine to add unique query params like <code>index.css?nocache=50392f1aa2ef2</code>. This will force web clients to download the latest versions.</p>
             </section>
         </div>
         
