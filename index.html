@@ -345,13 +345,13 @@ Router::init();
                 <pre class="prettyprint">&lt;meta name="permission-id" content="..." /&gt;</pre>
                 <p>This will execute the <code class="muted">F::$user->continueOrDenyPermission(...)</code> method. This happens after the <code class="muted">Page::eventOnLoad()</code> method and before the <code class="muted">Page::eventBeforeActions()</code> method.</p>
                 <pre class="prettyprint">&lt;meta name="email-debug-log" /&gt;</pre>
-                <p>This triggers the engine to email the system admin (<code class="muted">F::$config->get("admin-email")</code>) an email with the contents of the Engine's processing log.</p>
+                <p>This triggers the engine to email the system admin (<code class="muted">F::$config->get("admin-email")</code>) an email with the contents of the Engine's processing log. This is helpful when things don't go as planned.</p>
                 <pre class="prettyprint">&lt;meta name="cache-rule" [day|hour|minute|second]="..." /&gt;</pre>
                 <p>This will trigger the engine to save the output of the request to a cached file in the <code class="muted">www-cache/...</code> directory. The expiration date for the conent is set for the duration supplied.</p>
                 <pre class="prettyprint">&lt;meta name="force-unique-auto-includes" /&gt;</pre>
                 <p>The engine will add unique query string parameters to auto-included files such as CSS and JS such as: <code class="muted">&lt;link href="index.css?nocache=50392f1aa2ef2" /&gt;</code> and <code class="muted">&lt;script src="index.js?nocache=74792f0zz4eg3"&gt;&lt;script&gt;</code>.</p>
                 <pre class="prettyprint">&lt;meta name="preload-sql" content="..." alias="..." /&gt;</pre>
-                <p>The engine will open namespace <code class="muted">.sql.xml</code> file, find the SQL command and store the results into the <code class="muted">F::$customHashes</code> array property, ready to be used with HTML binders. If you can alias the array key by using the alias attribute.</p>
+                <p>The engine will open namespace <code class="muted">.sql.xml</code> file, find the SQL command and store the results into the <code class="muted">F::$customHashes</code> array property, ready to be used with HTML binders. You can name the array key by using the alias attribute, helpful for shorter HTML binder calls.</p>
             </section>
         </div>
         
