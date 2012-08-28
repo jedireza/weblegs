@@ -122,7 +122,7 @@ project/
 </pre>
                 <h4>Installation:</h4>
                 <ol>
-                    <li>Download and unzip files (or git clone) into a directory of your choice.</li>
+                    <li>Download and unzip (or git clone) files into a directory of your choice.</li>
                     <li>Create new mysql database and import the <code>mysql-db-structure.sql</code> file.</li>
                     <li>Configure project settings via the <code>app/config.php</code> file. Make sure you supply MySQL credentials.</li>
                     <li>Supply SMTP credentials if you want emails to send.</li>
@@ -342,7 +342,7 @@ Router::init();
                 
                 <pre class="prettyprint">&lt;meta name="require-session" /&gt;</pre>
                 <p>This will execute the <code class="muted">F::$user->requireSession()</code> method. This happens after the <code class="muted">Page::eventOnLoad()</code> method and before the <code class="muted">Page::eventBeforeActions()</code> method.</p>
-                <pre class="prettyprint">&lt;meta name="permission-id" content="..." /&gt;</pre>
+                <pre class="prettyprint">&lt;meta name="permission-id" content="840" /&gt;</pre>
                 <p>This will execute the <code class="muted">F::$user->continueOrDenyPermission(...)</code> method. This happens after the <code class="muted">Page::eventOnLoad()</code> method and before the <code class="muted">Page::eventBeforeActions()</code> method.</p>
                 <pre class="prettyprint">&lt;meta name="email-debug-log" /&gt;</pre>
                 <p>This triggers the engine to email the system admin (<code class="muted">F::$config->get("admin-email")</code>) an email with the contents of the Engine's processing log. This is helpful when things don't go as planned.</p>
@@ -350,8 +350,43 @@ Router::init();
                 <p>This will trigger the engine to save the output of the request to a cached file in the <code class="muted">www-cache/...</code> directory. The expiration date for the conent is set for the duration supplied.</p>
                 <pre class="prettyprint">&lt;meta name="force-unique-auto-includes" /&gt;</pre>
                 <p>The engine will add unique query string parameters to auto-included files such as CSS and JS such as: <code class="muted">&lt;link href="index.css?nocache=50392f1aa2ef2" /&gt;</code> and <code class="muted">&lt;script src="index.js?nocache=74792f0zz4eg3"&gt;&lt;script&gt;</code>.</p>
-                <pre class="prettyprint">&lt;meta name="preload-sql" content="..." alias="..." /&gt;</pre>
+                <pre class="prettyprint">&lt;meta name="preload-sql" content="sql_id" [alias="..."] /&gt;</pre>
                 <p>The engine will open namespace <code class="muted">.sql.xml</code> file, find the SQL command and store the results into the <code class="muted">F::$customHashes</code> array property, ready to be used with HTML binders. You can name the array key by using the alias attribute, helpful for shorter HTML binder calls.</p>
+            </section>
+            
+            <section id="web-mode">
+                <div class="page-header">
+                    <h1>Basic HTML Binders</h1>
+                </div>
+                <p class="lead">Bring data into your views (HTML files) without any PHP scripting in most cases. And when you do need to make scripted desicions, these binders are still ready work for you. After a binder has been processed the <code>data-bind-x="..."</code> attributes are removed from the document. We may use <code>div</code> tags in these examples but binders will work on any element. If the data selected is null or not found no changes are made to the element. Here are the <code>data-bind-x="..."</code> attributes and what they do.</p>
+                <pre class="prettyprint">&lt;div data-bind-text="selector"&gt;default value&lt;/div&gt;</pre>
+                <p>This will find the data based on the supplied selector and set the inner text of the element to that value.</p>
+                <pre class="prettyprint">&lt;div data-bind-html="selector"&gt;default value&lt;/div&gt;</pre>
+                <p>This will find the data based on the supplied selector and set the inner HTML of the element to that value. If the data is null or not found no changes are made to the element. <span class="label label-important">Be Careful:</span> you should sanitize any data you're bringing in from the outside world.</p>
+                <pre class="prettyprint">&lt;div data-bind-attr="name=selector[,name=selector]"&gt;...&lt;/div&gt;</pre>
+                <p>This will add attributes to your elements. You may add one <code class="muted">name=value</code> set or comma seperate multiple. The attribute will be the name you supply with the selector's value as the content of the attribute.</p>
+            </section>
+            
+            <section id="web-mode">
+                <div class="page-header">
+                    <h1>Specialty Binders</h1>
+                </div>
+                <pre class="prettyprint">&lt;div data-bind-input="selector"&gt;...&lt;/div&gt;</pre>
+                <p>This will handle input elements by setting values, marking list menu options as selected, handling checkbox and radio button values appropriatly. For <code class="muted">&lt;input type="text|password|hidden|submit|button|reset" /></code> elements we set the <code class="muted">value</code> attribute to the selector's data value. For <code class="muted">&lt;textarea&gt;&lt;/textarea&gt;</code> elements we set the inner HTML to the selector's data value. For <code class="muted">&lt;select&gt;&lt;/select&gt;</code> elements we find the option a value of the selector's data value and set the <code class="muted">selected="selected"</code> attribute for that option. For <code class="muted">&lt;input type="checkbox|radio" /&gt;</code> elements if the value same as the selector's data value we mark the <code class="muted">checked="checked"</code> attribute.</p>
+                <pre class="prettyprint">&lt;div data-bind-function="ClassName::methodName"&gt;...&lt;/div&gt;</pre>
+                <p>To use this binder you create a method in your <code class="muted">Page</code> class like <code class="muted">Page::doSomethingCool($node, $data)</code> or in a <code class="muted">Helpers</code> class like <code class="muted">Helpers::sharedCoolness($node, $data)</code>. The cool thing is that when your function is called, you get the element passed as an argument for quick access. You'll need to experience this to see first hand just how neat it is. The <code>$data</code> argument passed to your function is neat too cause when you use it with <code>data-bind-results</code> the <code>$data</code> argument is from each item of the data set.</p>
+            </section>
+            
+            <section id="web-mode">
+                <div class="page-header">
+                    <h1>Binding Data Sets</h1>
+                </div>
+                <pre class="prettyprint">&lt;div data-bind-results="sql_id"&gt;...&lt;/div&gt;</pre>
+                <p>details coming soon</p>
+                <pre class="prettyprint">&lt;div data-bind-rows="custom_hash_key"&gt;...&lt;/div&gt;</pre>
+                <p>details coming soon</p>
+                <pre class="prettyprint">&lt;div data-bind-form="sql_id"&gt;...&lt;/div&gt;</pre>
+                <p>details coming soon</p>
             </section>
         </div>
         
