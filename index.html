@@ -408,10 +408,51 @@ Router::init();
                 <div class="page-header">
                     <h1>Binding Data Forms</h1>
                 </div>
+                <p class="lead">This is a great feature because it will handle your CRUD and be much more flexible. We're also integrated inline error messages with the same markup from Bootstrap. The following example is a CRUD screen, simply remove the <code>data-bind-form-context="add-update-delete"</code> attribute from the <code>&lt;form ...&gt;...&lt;/form&gt;</code> element to turn CRUD handling off. Another great feature is that all this is post-back friendly.</p>
+                <p class="lead">This the <code>data-bind-form="sql_id"</code> binder will trigger the engine to load the name space <code>.sql.xml</code> file and find the SQL command by the <code>sql_id</code> supplied. It then stores the record data into the <code>F::$formCache[sql_id]</code> array property. The form's contents are then bound with this data, most importantly elements with the <code>data-bind-input="..."</code> attribute.</p>
 <pre class="prettyprint">
-&lt;div data-bind-form="sql_id"&gt;...&lt;/div&gt;
+&lt;form data-bind-form="get-record" data-bind-form-context="add-update-delete"&gt;
+    &lt;fieldset&gt;
+        &lt;legend&gt;User Information&lt;/legend&gt;
+        &lt;div class="control-group"&gt;
+            &lt;label class="control-label" for="is_active"&gt;Is Active:&lt;/label&gt;
+            &lt;div class="controls"&gt;
+                &lt;select data-bind-input="is_active" name="is_active"&gt;
+                    &lt;option value="yes"&gt;yes&lt;/option&gt;
+                    &lt;option value="no"&gt;no&lt;/option&gt;
+                &lt;/select&gt;
+                &lt;span class="help-inline"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="control-group"&gt;
+            &lt;label class="control-label" for="username"&gt;Username:&lt;/label&gt;
+            &lt;div class="controls"&gt;
+                &lt;input type="text" data-bind-input="username" maxlength="45" size="20" name="username" /&gt;
+                &lt;span class="help-inline"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="control-group"&gt;
+            &lt;label class="control-label" for="email"&gt;Email:&lt;/label&gt;
+            &lt;div class="controls"&gt;
+                &lt;input type="text" data-bind-input="email" maxlength="128" size="40" name="email" /&gt;
+                &lt;span class="help-inline"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="control-group"&gt;
+            &lt;label class="control-label" for="password"&gt;Password:&lt;/label&gt;
+            &lt;div class="controls"&gt;
+                &lt;input type="password" data-bind-input="password" maxlength="40" size="15" name="password" /&gt;
+                &lt;span class="help-inline"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/fieldset&gt;
+    &lt;div class="form-actions"&gt;
+        &lt;input class="btn btn-primary" type="button" value="Create New" name="action" id="button_new" /&gt;
+        &lt;input class="btn btn-primary" type="button" value="Update" name="action" id="button_update" /&gt;
+        &lt;input class="btn btn-danger" type="button" value="Delete" name="action" id="button_delete" /&gt;
+    &lt;/div&gt;
+&lt;/form&gt;
 </pre>
-                <p>details coming soon</p>
             </section>
         </div>
         
