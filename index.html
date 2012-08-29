@@ -234,7 +234,7 @@ F::init();
                 <div class="page-header">
                     <h1>WWW Mode &amp; Events</h1>
                 </div>
-                <p class="lead">Your <code>www</code> scripts get executed during web requests (*cough* Apache *cough*) so the first layer in the process starts with the <code>www/.htaccess</code> file.</p>
+                <p class="lead">Your <code>www</code> scripts get executed during web requests (*cough* Apache *cough*) so the first layer in the process is the <code>www/.htaccess</code> file.</p>
 <pre class="prettyprint">
 &lt;FilesMatch "(.xsl|.sql.xml|.php|.email.html)$"&gt;
     Order Allow,Deny
@@ -303,9 +303,9 @@ Router::init();
                 <div class="page-header">
                     <h1>Engine Namespace</h1>
                 </div>
-                <p class="lead">The engine namespace (<code>F::$engineNamespace</code>) property is like a path signature. For example, the engine namespace of <code>http://myproject/login/index.html</code> is <code>login/index</code>. It's the path without a file extension. This allows us to do some helpful things like auto include PHP/HTML/JS/CSS respectfully.</p>
+                <p class="lead">The engine namespace property (<code>F::$engineNamespace</code>) is like a path signature. For example, the engine namespace of <code>http://myproject/login/index.html</code> is <code>login/index</code>. It's the path without a file extension. This allows us to do some helpful things like auto include PHP/HTML/JS/CSS respectfully.</p>
                 <p class="lead">Take our home page for example (<code>www/index.html</code>). If we simply added the files <code>www/index.css</code> and/or <code>www/index.js</code> the engine will add the appropriate CSS or JS include tags into the document DOM before sending it to the client.</p>
-                <p>This HTLM document:</p>
+                <p>This HTML document:</p>
 <pre class="prettyprint">
 &lt;!DOCTYPE html&gt;
 &lt;html&gt;
@@ -341,51 +341,76 @@ Router::init();
                 <p class="lead">You can include special META tags that the engine can use while processing. The engine automatically removes these tags before the final result is sent to web clients.</p>
                 
                 <pre class="prettyprint">&lt;meta name="require-session" /&gt;</pre>
-                <p>This will execute the <code class="muted">F::$user->requireSession()</code> method. This happens after the <code class="muted">Page::eventOnLoad()</code> method and before the <code class="muted">Page::eventBeforeActions()</code> method.</p>
+                <p>This triggers the engine to execute the <code class="muted">F::$user->requireSession()</code> method. This happens after the <code class="muted">Page::eventOnLoad()</code> method and before the <code class="muted">Page::eventBeforeActions()</code> method.</p>
                 <pre class="prettyprint">&lt;meta name="permission-id" content="840" /&gt;</pre>
-                <p>This will execute the <code class="muted">F::$user->continueOrDenyPermission(...)</code> method. This happens after the <code class="muted">Page::eventOnLoad()</code> method and before the <code class="muted">Page::eventBeforeActions()</code> method.</p>
+                <p>This triggers the engine to execute the <code class="muted">F::$user->continueOrDenyPermission(...)</code> method. This happens after the <code class="muted">Page::eventOnLoad()</code> method and before the <code class="muted">Page::eventBeforeActions()</code> method. You should use the <code class="muted">&lt;meta name="require-session" /&gt;</code> META controller before this one to validate the user does indeed have a session before checking for permission.</p>
                 <pre class="prettyprint">&lt;meta name="email-debug-log" /&gt;</pre>
                 <p>This triggers the engine to email the system admin (<code class="muted">F::$config->get("admin-email")</code>) an email with the contents of the Engine's processing log. This is helpful when things don't go as planned.</p>
                 <pre class="prettyprint">&lt;meta name="cache-rule" [day|hour|minute|second]="..." /&gt;</pre>
-                <p>This will trigger the engine to save the output of the request to a cached file in the <code class="muted">www-cache/...</code> directory. The expiration date for the conent is set for the duration supplied.</p>
+                <p>This triggers the engine to save the output of the request to a cached file in the <code class="muted">www-cache/...</code> directory. The expiration date for the conent is set for the duration supplied.</p>
                 <pre class="prettyprint">&lt;meta name="force-unique-auto-includes" /&gt;</pre>
-                <p>The engine will add unique query string parameters to auto-included files such as CSS and JS such as: <code class="muted">&lt;link href="index.css?nocache=50392f1aa2ef2" /&gt;</code> and <code class="muted">&lt;script src="index.js?nocache=74792f0zz4eg3"&gt;&lt;script&gt;</code>.</p>
+                <p>This triggers the engine to add unique query string parameters to auto-included files such as CSS and JS such as: <code class="muted">&lt;link href="index.css?nocache=50392f1aa2ef2" /&gt;</code> and <code class="muted">&lt;script src="index.js?nocache=74792f0zz4eg3"&gt;&lt;script&gt;</code>.</p>
                 <pre class="prettyprint">&lt;meta name="preload-sql" content="sql_id" [alias="..."] /&gt;</pre>
-                <p>The engine will open namespace <code class="muted">.sql.xml</code> file, find the SQL command and store the results into the <code class="muted">F::$customHashes</code> array property, ready to be used with HTML binders. You can name the array key by using the alias attribute, helpful for shorter HTML binder calls.</p>
+                <p>This triggers the engine to open the namespace <code class="muted">.sql.xml</code> file, find the SQL command using the supplied <code class="muted">sql_id</code> and store the results into the <code class="muted">F::$customHashes[sql_id|alias]</code> array property, ready to be used with HTML binders. You can name the array key by using the alias attribute, helpful for shorter HTML binder calls.</p>
             </section>
             
             <section id="web-mode">
                 <div class="page-header">
                     <h1>Basic HTML Binders</h1>
                 </div>
-                <p class="lead">Bring data into your views (HTML files) without any PHP scripting in most cases. And when you do need to make scripted desicions, these binders are still ready work for you. After a binder has been processed the <code>data-bind-x="..."</code> attributes are removed from the document. We may use <code>div</code> tags in these examples but binders will work on any element. If the data selected is null or not found no changes are made to the element. Here are the <code>data-bind-x="..."</code> attributes and what they do.</p>
+                <p class="lead">Bring data into your views (HTML files) without any PHP scripting in most cases. And when you do need to make scripted desicions, these binders are still ready work for you. After a binder has been processed the <code>data-bind-x="..."</code> attributes are removed from the document. We use <code>div</code> tags in these examples but binders will work on any element. If the data selected is null or not found no changes are made to the element. Here are the <code>data-bind-x="..."</code> attributes and what they do.</p>
                 <pre class="prettyprint">&lt;div data-bind-text="selector"&gt;default value&lt;/div&gt;</pre>
-                <p>This will find the data based on the supplied selector and set the inner text of the element to that value.</p>
+                <p>This will trigger the engine to find the data based on the supplied selector and set the inner text of the element to that value.</p>
                 <pre class="prettyprint">&lt;div data-bind-html="selector"&gt;default value&lt;/div&gt;</pre>
-                <p>This will find the data based on the supplied selector and set the inner HTML of the element to that value. If the data is null or not found no changes are made to the element. <span class="label label-important">Be Careful:</span> you should sanitize any data you're bringing in from the outside world.</p>
+                <p>This will trigger the engine to find the data based on the supplied selector and set the inner HTML of the element to that value. <span class="label label-important">Be Careful:</span> you should sanitize any data you're bringing in from the outside world since this is being added to the DOM.</p>
                 <pre class="prettyprint">&lt;div data-bind-attr="name=selector[,name=selector]"&gt;...&lt;/div&gt;</pre>
-                <p>This will add attributes to your elements. You may add one <code class="muted">name=value</code> set or comma seperate multiple. The attribute will be the name you supply with the selector's value as the content of the attribute.</p>
+                <p>This will trigger the engine to add attributes to your elements. You may add one <code class="muted">name=value</code> pair or comma seperate them to add multiple. The attribute will be the name you supply with the selector's value as the content of the attribute. If the value of an attribute's selector is null, that attribute will not be added to the element.</p>
             </section>
             
             <section id="web-mode">
                 <div class="page-header">
                     <h1>Specialty Binders</h1>
                 </div>
-                <pre class="prettyprint">&lt;div data-bind-input="selector"&gt;...&lt;/div&gt;</pre>
-                <p>This will handle input elements by setting values, marking list menu options as selected, handling checkbox and radio button values appropriatly. For <code class="muted">&lt;input type="text|password|hidden|submit|button|reset" /></code> elements we set the <code class="muted">value</code> attribute to the selector's data value. For <code class="muted">&lt;textarea&gt;&lt;/textarea&gt;</code> elements we set the inner HTML to the selector's data value. For <code class="muted">&lt;select&gt;&lt;/select&gt;</code> elements we find the option a value of the selector's data value and set the <code class="muted">selected="selected"</code> attribute for that option. For <code class="muted">&lt;input type="checkbox|radio" /&gt;</code> elements if the value same as the selector's data value we mark the <code class="muted">checked="checked"</code> attribute.</p>
+                <pre class="prettyprint">&lt;input data-bind-input="selector" /&gt;</pre>
+                <p>This will trigger the engine to handle input elements by setting values, marking list menu options as selected, handling checkbox and radio button values appropriatly. For <code class="muted">&lt;input type="text|password|hidden|submit|button|reset" /></code> elements we set the <code class="muted">value</code> attribute to the selector's data value. For <code class="muted">&lt;textarea&gt;&lt;/textarea&gt;</code> elements we set the inner HTML to the selector's data value. For <code class="muted">&lt;select&gt;&lt;/select&gt;</code> elements we find options with a value of the selector's data value and set the <code class="muted">selected="selected"</code> attribute for that option. For <code class="muted">&lt;input type="checkbox|radio" /&gt;</code> elements we set the <code class="muted">checked="checked"</code> attribute if the value matches the data selector's value.</p>
                 <pre class="prettyprint">&lt;div data-bind-function="ClassName::methodName"&gt;...&lt;/div&gt;</pre>
-                <p>To use this binder you create a method in your <code class="muted">Page</code> class like <code class="muted">Page::doSomethingCool($node, $data)</code> or in a <code class="muted">Helpers</code> class like <code class="muted">Helpers::sharedCoolness($node, $data)</code>. The cool thing is that when your function is called, you get the element passed as an argument for quick access. You'll need to experience this to see first hand just how neat it is. The <code>$data</code> argument passed to your function is neat too cause when you use it with <code>data-bind-results</code> the <code>$data</code> argument is from each item of the data set.</p>
+                <p>To use this binder you create a method in your <code class="muted">Page</code> class like <code class="muted">Page::doSomethingCool($node, $data)</code> or in a <code class="muted">Helpers</code> class like <code class="muted">Helpers::sharedCoolness($node, $data)</code>. The cool thing is that when your function is called, you get the element passed as an argument for quick access. You'll need to experience this to see first hand just how neat it is. The <code class="muted">$data</code> argument passed to your function is neat too cause when you use it with <code class="muted">data-bind-results</code> the <code class="muted">$data</code> argument is from each item of the data set, giving you row by row conditional control. <span class="label label-warning">Notice</span> how we didn't include the <code class="muted">()</code> parenthesis in the markup, that's on purpose, they should be ommitted.</p>
             </section>
             
             <section id="web-mode">
                 <div class="page-header">
                     <h1>Binding Data Sets</h1>
                 </div>
-                <pre class="prettyprint">&lt;div data-bind-results="sql_id"&gt;...&lt;/div&gt;</pre>
-                <p>details coming soon</p>
-                <pre class="prettyprint">&lt;div data-bind-rows="custom_hash_key"&gt;...&lt;/div&gt;</pre>
-                <p>details coming soon</p>
-                <pre class="prettyprint">&lt;div data-bind-form="sql_id"&gt;...&lt;/div&gt;</pre>
+<pre class="prettyprint">
+&lt;div data-bind-results="sql_id"&gt;
+    &lt;div data-label="blank-row"&gt;
+        &lt;a data-bind-text="selector" data-bind-attr="href=selector"&gt;default value&lt;/a&gt; 
+        &lt;p data-bind-text="selector"&gt;default value&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div data-label="no-results-row"&gt;
+        &lt;p&gt;no results found&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+                <p>This triggers the engine to open the namespace <code class="muted">.sql.xml</code> file, find the SQL command by the supplied ID and loop over the results. For each row the engine will duplicate the element which has a <code class="muted">data-label="blank-row"</code> attribute, we call this a chunk. Then the engine binds that chunk with the row of data we're looping over. If there are results the engine removes the element with a <code class="muted">data-label="no-results-row"</code> attribute. If there are no results, the engine removes the element with <code class="muted">data-label="blank-row"</code> attribute. There are some other features of <code class="muted">data-bind-results="..."</code> binder such as paging and built-in column handling. It's also really cool to use <code class="muted">data-bind-function="Page::rowHandler"</code> on the <code class="muted">data-label="blank-row"</code> element, giving you row by row programatic control.</p>
+<pre class="prettyprint">
+&lt;div data-bind-rows="custom_hash_key"&gt;
+    &lt;div data-label="blank-row"&gt;
+        &lt;span data-bind-text="selector"&gt;default value&lt;/span&gt; 
+        &lt;p data-bind-text="selector"&gt;default value&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+                <p>This works similarly to the <code class="muted">data-bind-results="..."</code> stuff above. However we don't get the data via SQL here and there isn't any special features included like built-in paging or the <code class="muted">data=label="no-results-row"</code> handling. The engine will look in the <code class="muted">F::$customHashes[custom_hash_key]</code> array property using the supplied <code class="muted">custom_hash_key</code> key. It then loops over the dataset and binds each chunk with the appropriate data. You'll want to fill up your custom hash data during the <code class="muted">Page::eventBeforeDataBinding()</code> method so the data is available when the engine needs it.</p>
+            </section>
+            
+            <section id="web-mode">
+                <div class="page-header">
+                    <h1>Binding Data Forms</h1>
+                </div>
+<pre class="prettyprint">
+&lt;div data-bind-form="sql_id"&gt;...&lt;/div&gt;
+</pre>
                 <p>details coming soon</p>
             </section>
         </div>
