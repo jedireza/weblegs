@@ -30,6 +30,7 @@ class SMTPClient {
     public $message;
     public $isHTML;
     public $attachments;
+    public $hasInlineAttachments;
     public $host;
     public $port;
     public $protocol;
@@ -55,6 +56,7 @@ class SMTPClient {
         $this->message = "";
         $this->isHTML = false;
         $this->attachments = array();
+        $this->hasInlineAttachments = false;
         $this->host = "";
         $this->port = "25";
         $this->protocol = "tcp";
@@ -157,9 +159,14 @@ class SMTPClient {
     /**
      * adds a file path to the attachments array
      * @param string $filePath
+     * @param string $contentID
+     * @param string $disposition
      */
-    public function attachFile($filePath) {
-        $this->attachments[] = $filePath;
+    public function attachFile($filePath, $contentID=null, $disposition = "attachment") {
+        $this->attachments[] = array("path" => $filePath, "cid" => $contentID, "disposition" => $disposition);
+        if ($disposition == "inline") {
+            $this->hasInlineAttachments = true;
+        }
     }
     
     /**
@@ -278,7 +285,7 @@ class SMTPClient {
         }
         else if(count($this->attachments) != 0) {
             //this message is mixed
-            $this->mimeMessage->addHeader("Content-Type", "multipart/mixed;\n\tboundary=\"". $mainBoundary  ."\"");
+            $this->mimeMessage->addHeader("Content-Type", "multipart/". ($this->hasInlineAttachments ? "related" : "mixed") .";\n\tboundary=\"". $mainBoundary  ."\"");
             $this->mimeMessage->preamble = "This is a multi-part message in MIME format.";
             
             //is this an alternative message?
@@ -288,6 +295,8 @@ class SMTPClient {
                 
                 //build the Alternative part of this message
                 $alternativeMessage = new MIMEmessage();
+
+                //Set boundry content-type based on attachment types(inline or not)
                 $alternativeMessage->addHeader("Content-Type", "multipart/alternative;\n\tboundary=\"".  $alternativeBoundary ."\"");
                 
                 //build the html part of this message
@@ -323,7 +332,7 @@ class SMTPClient {
             //add attachments to the main message message
             for($i = 0 ; $i < count($this->attachments); $i++) {
                 //create mime message object
-                $filePath = $this->attachments[$i];
+                $filePath = $this->attachments[$i]["path"];
                 
                 //get file info
                 $thisFileInfo = pathinfo($filePath);
@@ -332,7 +341,10 @@ class SMTPClient {
                 $attachmentMessage = new MIMEmessage();
                 $attachmentMessage->addHeader("Content-Type", $this->getContentTypeByExtension($thisFileInfo['extension']) .";\n\tname=\"". $thisFileInfo['basename'] ."\"");
                 $attachmentMessage->addHeader("Content-Transfer-Encoding", "base64");
-                $attachmentMessage->addHeader("Content-Disposition", "attachment;\n\tfilename=\"". $thisFileInfo['basename'] ."\"");
+                $attachmentMessage->addHeader("Content-Disposition", $this->attachments[$i]["disposition"] .";\n\tfilename=\"". $thisFileInfo['basename'] ."\"");
+                if (isset($this->attachments[$i]["cid"])) {
+                    $attachmentMessage->addHeader("Content-ID", "<". $this->attachments[$i]["cid"] .">");
+                }
                 $attachmentMessage->fileBody = file_get_contents($filePath);
                 
                 //add this attachment to the main message
