@@ -125,6 +125,9 @@ class DOMTemplate_Ext extends DOMTemplate {
         }
         $data = $this->resultsCache[$resourceID];
         
+        //get found rows
+        $tmpFoundRows = F::$db->getFoundRows();
+        
         //if columns, items per column
         if($totalColumns > 1) {
             $tmpItemsPerColumn = (int)(count($data) / $totalColumns);
@@ -192,9 +195,6 @@ class DOMTemplate_Ext extends DOMTemplate {
             //remove blank-row
             $row->remove();
         }
-        
-        //get found rows
-        $tmpFoundRows = F::$db->getFoundRows();
         
         //apply data paging?
         if($table->root()->getAttribute("data-bind-paging") != "") {
