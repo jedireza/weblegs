@@ -186,10 +186,10 @@ class SMTPClient {
             //do nothing
         }
         else if($this->replyTo[0] != "" && $this->replyTo[1] == "") {
-            $this->mimeMessage->addHeader("replyto", $this->replyTo[0]);
+            $this->mimeMessage->addHeader("reply-to", $this->replyTo[0]);
         }
         else if($this->replyTo[0] != "" && $this->replyTo[1] != "") {
-            $this->mimeMessage->addHeader("replyto", "\"". $this->replyTo[1] ."\" <". $this->replyTo[0] .">");
+            $this->mimeMessage->addHeader("reply-to", "\"". $this->replyTo[1] ."\" <". $this->replyTo[0] .">");
         }
         
         //add subject
